@@ -13,14 +13,17 @@ type PropsType = {
     removeTask: (taskId: string) => void
     changeFilter: (value: FilterValuesType) => void
     addTask: (title: string) => void
+    children: React.ReactNode
 }
 
-export function Todolist(props: PropsType) {
+export const Todolist:React.FC<PropsType> = ({children, ...props}) => {
     let [title, setTitle] = useState("")
 
     const addTask = () => {
-        props.addTask(title);
+        // @ts-ignore
+        props.addTask(onChangeRef.current.value);
         setTitle("");
+
     }
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,11 +41,13 @@ export function Todolist(props: PropsType) {
     const onActiveClickHandler = () => props.changeFilter("active");
     const onCompletedClickHandler = () => props.changeFilter("completed");
 
+    let onChangeRef = useRef<HTMLInputElement>(null)
     return <div>
         <h3>{props.title}</h3>
         <div>
             <input value={title}
                    onChange={onChangeHandler}
+                   ref={onChangeRef}
                    onKeyPress={onKeyPressHandler}
             />
             <button onClick={addTask}>+</button>
@@ -50,7 +55,6 @@ export function Todolist(props: PropsType) {
         <ul>
             {
                 props.tasks.map(t => {
-
                     const onClickHandler = () => props.removeTask(t.id)
 
                     return <li key={t.id}>
@@ -66,6 +70,7 @@ export function Todolist(props: PropsType) {
             <button onClick={onActiveClickHandler}>Active</button>
             <button onClick={onCompletedClickHandler}>Completed</button>
         </div>
+        {children}
     </div>
 }
 
